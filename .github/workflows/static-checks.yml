@@ -1,4 +1,6 @@
 name: Static site syntax checks
+permissions:
+  contents: read
 on:
   pull_request:
   push:
