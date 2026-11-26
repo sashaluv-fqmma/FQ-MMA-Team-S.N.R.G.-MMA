@@ -95,7 +95,7 @@
                 select.onchange = updatePrice;
                 updatePrice();
                 submit.disabled = false;
-                message.textContent = Number(availableStreamOptions.find((stream) => stream.event_id === select.value)?.price_cents || 0) <= 0 ? 'Enter your email to open the free live stream.' : 'Enter your email to continue to secure checkout.';
+                message.textContent = Number(availableStreamOptions.find((stream) => stream.event_id === select.value)?.price_cents || 0) <= 0 ? 'Enter your email to open the free live stream.' : 'Enter your email and send your request. You pay by Venmo or Cash App, and your access code comes by email.';
             } catch (error) {
                 availableStreamOptions = [];
                 submit.disabled = true;
@@ -121,18 +121,35 @@
             message.textContent = '';
             try {
                 await window.ensureSupabaseClient();
-                if (!window.supabaseReady || !window.sb) throw new Error('Secure checkout is temporarily unavailable. Please try again shortly.');
+                if (!window.supabaseReady || !window.sb) throw new Error('Stream access is temporarily unavailable. Please try again shortly.');
+                const promotionCode = document.getElementById('streamCheckoutPromotionCode').value.trim();
+                const selectedStream = availableStreamOptions.find((stream) => stream.event_id === select.value);
+                if (!promotionCode && Number(selectedStream?.price_cents || 0) > 0) {
+                    // No code: this is a purchase request, not a checkout. Email the request to the
+                    // business inbox through the proven contact pipe, then send the customer to the
+                    // pay page (Venmo / Cash App). No card page, no Stripe.
+                    submit.textContent = 'Sending your request\u2026';
+                    try {
+                        await window.sb.functions.invoke('send-contact-message', {
+                            body: { name: 'Live stream request', email, category: 'Ticket / Stream Access Inquiry', message: 'STREAM REQUEST \u2014 Event: ' + (selectedStream?.title || 'FQ MMA event') + '. Buyer email: ' + email + '. The customer was sent to the pay page to pay $35 by Venmo or Cash App. Send their access code once the payment lands.', company: '' }
+                        });
+                    } catch (requestError) {
+                        console.error('Stream request email failed; customer still sent to pay page.', requestError);
+                    }
+                    window.location.assign('/pay.html');
+                    return;
+                }
                 const { data, error } = await window.sb.functions.invoke('create-stream-checkout', {
-                    body: { event_id: select.value, buyer_email: email, promotion_code: document.getElementById('streamCheckoutPromotionCode').value.trim(), accepted_terms: document.getElementById('streamCheckoutTermsAccepted').checked }
+                    body: { event_id: select.value, buyer_email: email, promotion_code: promotionCode, accepted_terms: document.getElementById('streamCheckoutTermsAccepted').checked }
                 });
                 if (error) throw error;
                 if (data?.free_url && data.free_url.startsWith('https://fq-snrg-mma.com/watch.html?free_event_id=')) { window.location.assign(data.free_url); return; }
                 if (!data?.url || !data.url.startsWith('https://checkout.stripe.com/')) throw new Error(data?.error || 'Secure checkout could not be opened.');
                 window.location.assign(data.url);
             } catch (error) {
-                message.textContent = await getFunctionErrorMessage(error, 'Could not start checkout. No payment was taken.');
+                message.textContent = await getFunctionErrorMessage(error, 'Could not send your request. Please try again.');
                 submit.disabled = false;
-                submit.textContent = 'Continue to secure payment';
+                submit.textContent = 'Send request';
             }
         });
 
