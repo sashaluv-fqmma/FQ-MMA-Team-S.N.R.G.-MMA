@@ -18,7 +18,7 @@ main{width:min(100%,1000px)}.brand{font-size:.8rem;font-weight:900;letter-spacin
   <p class="brand">FQ MMA / Team S.N.R.G.</p>
   <section class="panel">
     <h1 id="eventTitle">Secure live stream</h1>
-    <p>This page verifies your Stripe payment before requesting a short-lived signed playback token. Please do not share your checkout link.</p>
+    <p>This page checks your access before opening the live player. Please do not share your access link.</p>
     <p id="streamMessage" class="message" role="status">Verifying your purchase…</p>
     <section id="recoveryPanel" class="message" hidden style="margin-top:14px">
       <h2 style="font-size:1.05rem;margin:.2rem 0 .5rem">Lost your stream link?</h2>
@@ -51,7 +51,20 @@ try {
   // Private browsing or storage restrictions should not block URL-based access.
 }
 const freeEventId = params.get("free_event_id");
+const accessId = params.get("access");
 async function startPlayback() {
+  if (accessId) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(accessId)) {
+      message.textContent = "That access link is not valid.";
+      return;
+    }
+    document.getElementById("recoveryPanel").hidden = true;
+    document.getElementById("eventTitle").textContent = "FQ MMA Live Stream";
+    playerWrap.hidden = false;
+    playerWrap.innerHTML = '<iframe title="FQ MMA live stream" src="https://customer-46irc6h95foi67cf.cloudflarestream.com/297d17dea1d18e1c212b80a85dc1536e/iframe" style="border:none;width:100%;height:100%" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+    message.textContent = "Access confirmed. Your live stream player is below. If the show has not started yet, the player will show the stream when we go live.";
+    return;
+  }
   const freeMode = Boolean(freeEventId);
   if (freeMode && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(freeEventId)) {
     message.textContent = "The free stream link is invalid.";
