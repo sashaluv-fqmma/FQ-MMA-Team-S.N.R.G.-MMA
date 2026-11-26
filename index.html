@@ -825,23 +825,23 @@
 <div id="streamCheckoutModal" class="hidden fixed inset-0 z-[110] bg-black/85 p-4 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="streamCheckoutTitle">
   <div class="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-950 p-6 shadow-2xl">
     <div class="flex items-start justify-between gap-4">
-      <div><p class="text-xs font-black uppercase tracking-widest text-brand-red">Secure checkout</p><h2 id="streamCheckoutTitle" class="font-heading text-2xl font-black uppercase mt-1">Live-stream access</h2><p id="streamCheckoutPrice" class="text-sm text-gray-300 mt-2">Live-stream access: $35.00 · Live event only · No replay</p></div>
+      <div><p class="text-xs font-black uppercase tracking-widest text-brand-red">Live stream</p><h2 id="streamCheckoutTitle" class="font-heading text-2xl font-black uppercase mt-1">Live-stream access</h2><p id="streamCheckoutPrice" class="text-sm text-gray-300 mt-2">Live-stream access: $35.00 · Live event only · No replay</p></div>
       <button id="streamCheckoutClose" type="button" class="btn2" aria-label="Close stream checkout">✕</button>
     </div>
     <form id="streamCheckoutForm" class="mt-5 space-y-4">
       <label class="block text-sm">Choose event<select id="streamCheckoutEvent" class="field" required><option value="">Choose an event</option></select></label>
-      <label class="block text-sm">Email for your payment confirmation<input id="streamCheckoutEmail" class="field" type="email" autocomplete="email" maxlength="320" required placeholder="you@example.com"></label>
+      <label class="block text-sm">Email for your access code<input id="streamCheckoutEmail" class="field" type="email" autocomplete="email" maxlength="320" required placeholder="you@example.com"></label>
       <label class="block text-sm">Promotion code (optional)<input id="streamCheckoutPromotionCode" class="field" type="text" maxlength="40" pattern="[A-Za-z0-9_-]+" autocomplete="off" placeholder="Enter promo code"></label>
       <label class="flex items-start gap-3 text-sm leading-6"><input id="streamCheckoutTermsAccepted" class="checkout-terms-checkbox" type="checkbox" required><span>I agree to the <a href="/terms.html" target="_blank" rel="noopener noreferrer" class="text-red-400 underline">Terms of Service</a> and have read the <a href="/refunds-outages.html" target="_blank" rel="noopener noreferrer" class="text-red-400 underline">Refund Policy</a>.</span></label>
       <p class="text-xs text-gray-400">One-time payment. Access is confirmed after payment is verified.</p>
-      <button id="streamCheckoutSubmit" type="submit" class="btn w-full" disabled>Continue to secure payment</button>
+      <button id="streamCheckoutSubmit" type="submit" class="btn w-full" disabled>Send request</button>
       <p id="streamCheckoutMessage" class="text-sm" role="status" aria-live="polite" aria-atomic="true"></p>
     </form>
   </div>
 </div>
 
 
-<script src="./site.js?v=20261021-terms-checkout-v3" defer></script>
+<script src="./site.js?v=20261125-stream-request-v4" defer></script>
 
 <div id="mediaPurchaseModal" class="hidden fixed inset-0 z-[130] bg-black/85 p-4 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="mediaPurchaseTitle">
   <div class="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-950 p-6">
