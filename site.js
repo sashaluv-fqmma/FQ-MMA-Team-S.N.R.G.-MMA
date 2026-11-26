@@ -139,6 +139,18 @@
                     window.location.assign('/pay.html');
                     return;
                 }
+                if (promotionCode) {
+                    // Code holders already paid Sasha directly (Venmo / Cash App). Redeem the
+                    // code through the Stripe-free door and go straight to the watch page.
+                    submit.textContent = 'Checking your code\u2026';
+                    const { data, error } = await window.sb.functions.invoke('redeem-stream-code', {
+                        body: { event_id: select.value, buyer_email: email, promotion_code: promotionCode, accepted_terms: document.getElementById('streamCheckoutTermsAccepted').checked }
+                    });
+                    if (error) throw error;
+                    if (!data?.watch_url) throw new Error(data?.error || 'That code could not be redeemed.');
+                    window.location.assign(data.watch_url);
+                    return;
+                }
                 const { data, error } = await window.sb.functions.invoke('create-stream-checkout', {
                     body: { event_id: select.value, buyer_email: email, promotion_code: promotionCode, accepted_terms: document.getElementById('streamCheckoutTermsAccepted').checked }
                 });
